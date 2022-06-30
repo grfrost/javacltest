@@ -158,7 +158,11 @@ void cltest(){
                   deviceType &= ~CL_DEVICE_TYPE_ACCELERATOR;
                   fprintf(stderr, "Accelerator ");
                }
+#ifdef __APPLE__
                fprintf(stderr, "(0x%llx) ", deviceType);
+#else
+               fprintf(stderr, "(0x%lx) ", deviceType);
+#endif
                fprintf(stderr, "\n");
 
                cl_uint maxComputeUnits;
@@ -181,15 +185,27 @@ void cltest(){
 
                cl_ulong maxMemAllocSize;
                status = clGetDeviceInfo(deviceIds[deviceIdx], CL_DEVICE_MAX_MEM_ALLOC_SIZE,  sizeof(maxMemAllocSize), &maxMemAllocSize, NULL);
+#ifdef __APPLE__
                fprintf(stderr, "         CL_DEVICE_MAX_MEM_ALLOC_SIZE....... %llu\n", maxMemAllocSize);
+#else
+               fprintf(stderr, "         CL_DEVICE_MAX_MEM_ALLOC_SIZE....... %lu\n", maxMemAllocSize);
+#endif
 
                cl_ulong globalMemSize;
                status = clGetDeviceInfo(deviceIds[deviceIdx], CL_DEVICE_GLOBAL_MEM_SIZE,  sizeof(globalMemSize), &globalMemSize, NULL);
+#ifdef __APPLE__
                fprintf(stderr, "         CL_DEVICE_GLOBAL_MEM_SIZE.......... %llu\n", globalMemSize);
+#else
+               fprintf(stderr, "         CL_DEVICE_GLOBAL_MEM_SIZE.......... %lu\n", globalMemSize);
+#endif
 
                cl_ulong localMemSize;
                status = clGetDeviceInfo(deviceIds[deviceIdx], CL_DEVICE_LOCAL_MEM_SIZE,  sizeof(localMemSize), &localMemSize, NULL);
+#ifdef __APPLE__
                fprintf(stderr, "         CL_DEVICE_LOCAL_MEM_SIZE........... %llu\n", localMemSize);
+#else
+               fprintf(stderr, "         CL_DEVICE_LOCAL_MEM_SIZE........... %lu\n", localMemSize);
+#endif
 
 
 

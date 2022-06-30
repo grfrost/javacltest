@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 project(javacltest)
 
 find_package(Java REQUIRED)
-find_package(JNI REQUIRED)
+if (UNIX AND NOT APPLE)
+   find_package(JNI REQUIRED)
+endif()
+
 include(UseJava)
 
 find_package(OpenCL REQUIRED)
@@ -22,8 +25,12 @@ add_custom_command(
         DEPENDS cltestjar
 )
 
-include_directories(${JNI_INCLUDE_DIRS} ${_jarFile} ${CMAKE_CURRENT_BINARY_DIR})
-
+if (APPLE)
+   include_directories($ENV{JAVA_HOME}/include $ENV{JAVA_HOME}/include/darwin ${_jarFile} ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+if (UNIX AND NOT APPLE)
+   include_directories(${JNI_INCLUDE_DIRS} ${_jarFile} ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 
 add_library(cltestjni SHARED
         src/cpp/cltestjni.cpp

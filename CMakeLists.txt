@@ -13,7 +13,6 @@ if (APPLE)
        message("--------------")
        message("NO JAVA_HOME")
    endif()
-
    set(JNI_SUBDIR darwin)
    set(OpenCL_FRAMEWORK "-framework OpenCL")
    set(LIBSUFFIX dylib)

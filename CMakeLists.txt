@@ -1,22 +1,64 @@
 cmake_minimum_required(VERSION 3.10)
 project(javacltest)
 if (APPLE)
-   set(JAVA_HOME /Users/garyfrost/Library/Java/JavaVirtualMachines/openjdk-18.0.1.1/Contents/Home)
+   if (EXISTS /Users/grfrost/java/jdk-19.jdk/Contents/Home)
+      set(JAVA_HOME /Users/grfrost/java/jdk-19.jdk/Contents/Home)
+   elseif (EXISTS /Users/grfrost/java/jdk-19.jdk/Contents/Home)
+      set(JAVA_HOME /Users/grfrost/java/jdk-19.jdk/Contents/Home)
+   elseif (EXISTS /Users/grfrost/java/jdk-18.0.1.1.jdk/Contents/Home)
+      set(JAVA_HOME /Users/grfrost/java/jdk-18.0.1.1.jdk/Contents/Home)
+   elseif(EXISTS /Users/garyfrost/java/jdk-18.0.1.1.jdk/Contents/Home)
+       set(JAVA_HOME /Users/garyfrost/java/jdk-18.0.1.1.jdk/Contents/Home)
+   else()
+       message("--------------")
+       message("NO JAVA_HOME")
+   endif()
+
    set(JNI_SUBDIR darwin)
    set(OpenCL_FRAMEWORK "-framework OpenCL")
+   set(LIBSUFFIX dylib)
+   execute_process(
+      COMMAND uname -m
+      RESULT_VARIABLE result
+      OUTPUT_VARIABLE OSX_ARCH
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+   )
+   if (OSX_ARCH STREQUAL "arm64")
+      set(ARCH aarch64)
+   else()
+      set(ARCH x86_64)
+   endif()
+   set(PLAT osx)
 endif ()
 if (UNIX AND NOT APPLE)
-   set(JAVA_HOME /usr/lib/jvm/jdk-18)
+   if (EXISTS /usr/lib/jvm/jdk-18)
+      set(JAVA_HOME /usr/lib/jvm/jdk-18)
+   else()
+       message("--------------")
+       message("NO JAVA_HOME")
+   endif()
    set(JNI_SUBDIR linux)
    set(OpenCL_FRAMEWORK "OpenCL")
+   set(LIBSUFFIX so)
+   set(ARCH x86_64)
+   set(PLAT linux)
 endif ()
 
+message("JAVA_HOME=${JAVA_HOME}")
+message("JNI_SUBDIR=${JNI_SUBDIR}")
+message("LIBSUFFIX=${LIBSUFFIX}")
+message("ARCH=${ARCH}")
+message("PLAT=${PLAT}")
+
 find_package(OpenCL REQUIRED)
+include_directories(${OPENCL_INCLUDE_DIR})
 
 set(CMAKE_CXX_STANDARD 14)
 set(CXXFLAGS "-g")
-
-include_directories(${OPENCL_INCLUDE_DIR})
+set(CLASSES "${CMAKE_CURRENT_BINARY_DIR}/classes")
+set(BCEL_JAR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/bcel-6.5.0.jar)
+set(APARAPI_JAR ${CMAKE_CURRENT_BINARY_DIR}/aparapi.jar)
+set(GENERATED_INCLUDE  ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 add_custom_command(
    OUTPUT org_grfstuff_CLTest.h
